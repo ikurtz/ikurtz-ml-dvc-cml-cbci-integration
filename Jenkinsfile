@@ -76,7 +76,7 @@ pipeline {
       }
 
       environment {
-        PYTHONUSERBASE = '/var/lib/jenkins/.local'
+        PYTHONUSERBASE = "${workspace}/.local"
       }
       
       steps {
