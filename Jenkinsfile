@@ -74,18 +74,16 @@ pipeline {
             """
         }
       }
-
-      environment {
-        PYTHONUSERBASE = "${workspace}/.local"
-      }
       
       steps {
         // Setup Python environment
+        sh 'apt-get update && apt-get install -y python3-venv'
         sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-        sh 'python get-pip.py --user'
+        sh 'python3 get-pip.py --user'
         sh '''
-          export PATH="$PYTHONUSERBASE/bin:$PATH"
-          python -m venv venv
+          export PATH="$HOME/.local/bin:$PATH"
+          export PYTHONUSERBASE="$HOME/.local"
+          python3 -m venv venv
           source venv/bin/activate
         '''
       }
