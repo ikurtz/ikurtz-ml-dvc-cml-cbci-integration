@@ -1,8 +1,9 @@
 pipeline {
   agent {
     kubernetes {
-      label 'my-kubernetes-label'
+      label 'default-jnlp'
       defaultContainer 'default-jnlp'
+      namespace 'cloudbees-sda'
       yaml """
         apiVersion: v1
         kind: Pod
@@ -13,8 +14,16 @@ pipeline {
           containers:
             - name: cml-dvc
               image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-              command: ['cat']
+              command: ['sh', '-c', 'sleep infinity']
               tty: true
+              volumeMounts:
+                - name: ikurtz-aws-sso-config
+                  mountPath: /root/.aws/config
+                  readOnly: true
+          volumes:
+            - name: ikurtz-aws-sso-config
+              configMap:
+                name: ikurtz-aws-sso-config-map
           """
     }
   }
@@ -46,22 +55,22 @@ pipeline {
       steps {
         container('cml-dvc') {
           sh 'dvc init --no-scm'
-          sh 'dvc remote add -d storage s3://your-bucket/path'
-          sh 'dvc remote modify storage credentialpath /app/.aws/credentials'
+          sh 'dvc remote add -d storage s3://ikurtz-cbci-aws-workshop-dml-demo/'
+          sh 'dvc remote modify storage sso_profile cloudbees-sa-infra-admin'
         }
       }
     }
     
     stage('Train model') {
-      environment {
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-      }
       steps {
         container('cml-dvc') {
-          sh 'pip install -r requirements.txt'
-          sh 'dvc pull data --run-cache'
-          sh 'dvc repro'
+          withAWS(region: 'us-east-1', ssoProfile: 'cloudbees-sa-infra-admin') {
+            sh '''
+              pip install -r requirements.txt  # Install dependencies
+              dvc pull data --run-cache        # Pull data & run-cache from S3
+              dvc repro                        # Reproduce pipeline
+            '''
+          }
         }
       }
     }
