@@ -77,8 +77,8 @@ pipeline {
 
       steps {
         // Setup Python environment
-        sh 'python -m ensurepip'  // Install pip if available
-        sh 'python -m pip --version || curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python get-pip.py'  // Install pip if not available
+        sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
+        sh 'python get-pip.py'
         sh 'python -m venv venv'
         sh 'source venv/bin/activate'
       }
