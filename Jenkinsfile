@@ -28,7 +28,7 @@ pipeline {
     }
   }
   
-options {
+  options {
     timeout(time: 25, unit: 'MINUTES')
   }
 
