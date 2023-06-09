@@ -75,13 +75,16 @@ pipeline {
         }
       }
 
+      environment {
+        PYTHONUSERBASE = '/var/lib/jenkins/.local'
+      }
+      
       steps {
         // Setup Python environment
         sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
         sh 'python get-pip.py --user'
         sh '''
-          export PATH="$HOME/.local/bin:$PATH"
-          export PYTHONUSERBASE="$HOME/.local"
+          export PATH="$PYTHONUSERBASE/bin:$PATH"
           python -m venv venv
           source venv/bin/activate
         '''
