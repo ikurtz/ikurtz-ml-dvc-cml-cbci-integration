@@ -78,9 +78,12 @@ pipeline {
       steps {
         // Setup Python environment
         sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-        sh 'python get-pip.py'
-        sh 'python -m venv venv'
-        sh 'source venv/bin/activate'
+        sh 'python get-pip.py --user'
+        sh '''
+          export PATH="$HOME/.local/bin:$PATH"
+          export PYTHONUSERBASE="$HOME/.local"
+          python -m venv venv
+          source venv/bin/activate
       }
     }
     
