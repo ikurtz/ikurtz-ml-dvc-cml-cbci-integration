@@ -184,7 +184,7 @@ pipeline {
       }
       
       steps {
-          withAWS(region: 'us-east-1', ssoProfile: 'cloudbees-sa-infra-admin') {
+          withAWS(region: 'us-east-1', profile: 'cloudbees-sa-infra-admin') {
             sh '''
               pip install -r requirements.txt  # Install dependencies
               dvc pull data --run-cache        # Pull data & run-cache from S3
