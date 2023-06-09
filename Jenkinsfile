@@ -1,5 +1,5 @@
 pipeline {
-  agent 'none'
+  agent none
   options {
     timeout(time: 25, unit: 'MINUTES')
   }
@@ -84,6 +84,7 @@ pipeline {
           export PYTHONUSERBASE="$HOME/.local"
           python -m venv venv
           source venv/bin/activate
+        '''
       }
     }
     
@@ -153,11 +154,11 @@ pipeline {
         }
       }
       steps {
-          sh 'dvc init --no-scm'
-          sh 'dvc remote add -d storage s3://ikurtz-cbci-aws-workshop-dml-demo/'
-          sh 'dvc remote modify storage sso_profile cloudbees-sa-infra-admin'
-        }
+        sh 'dvc init --no-scm'
+        sh 'dvc remote add -d storage s3://ikurtz-cbci-aws-workshop-dml-demo/'
+        sh 'dvc remote modify storage sso_profile cloudbees-sa-infra-admin'
       }
+    }
     
     stage('Train model') {
       agent {
@@ -190,20 +191,21 @@ pipeline {
       }
       
       steps {
-          withAWS(region: 'us-east-1', profile: 'cloudbees-sa-infra-admin') {
-            sh '''
-              pip install -r requirements.txt  // Install dependencies
-              dvc pull data --run-cache        // Pull data & run-cache from S3
-              dvc repro                        // Reproduce pipeline
-            '''
-          }
+        withAWS(region: 'us-east-1', profile: 'cloudbees-sa-infra-admin') {
+          sh '''
+            pip install -r requirements.txt  # Install dependencies
+            dvc pull data --run-cache        # Pull data & run-cache from S3
+            dvc repro                        # Reproduce pipeline
+          '''
         }
       }
+    }
     
     stage('Create CML report') {
       environment {
         REPO_TOKEN = credentials('ikurtz-gh-pat')
       }
+      
       steps {
         container('cml-dvc') {
           sh 'echo "## Metrics: workflow vs. main" >> report.md'
@@ -232,5 +234,6 @@ pipeline {
     }
   }
 }
+
 
 
