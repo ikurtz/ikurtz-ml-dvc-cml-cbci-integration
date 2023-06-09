@@ -1,73 +1,189 @@
 pipeline {
-  agent {
-    kubernetes {
-      label 'default-jnlp'
-      defaultContainer 'default-jnlp'
-      namespace 'cloudbees-sda'
-      yaml """
-        apiVersion: v1
-        kind: Pod
-        metadata:
-          labels:
-            my-kubernetes-label: true
-        spec:
-          containers:
-            - name: cml-dvc
-              image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-              command: ['sh', '-c', 'sleep infinity']
-              tty: true
-              volumeMounts:
-                - name: ikurtz-aws-sso-config
-                  mountPath: /root/.aws/config
-                  readOnly: true
-          volumes:
-            - name: ikurtz-aws-sso-config
-              configMap:
-                name: ikurtz-aws-sso-config-map
-          """
-    }
-  }
-  
   options {
     timeout(time: 25, unit: 'MINUTES')
+  }
+  
+  environment {
+    AWS_SSO_CONFIGMAP = 'ikurtz-aws-sso-config-map'
   }
 
   stages {
     stage('Checkout') {
+      agent {
+        kubernetes {
+          label 'default-jnlp'
+          defaultContainer 'jnlp'
+          namespace 'cloudbees-sda'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                my-kubernetes-label: true
+            spec:
+              containers:
+                - name: cml-dvc
+                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
+                  command: ['sh', '-c', 'sleep infinity']
+                  tty: true
+                  volumeMounts:
+                    - name: ikurtz-aws-sso-config
+                      mountPath: /root/.aws/config
+                      readOnly: true
+              volumes:
+                - name: ikurtz-aws-sso-config
+                  configMap:
+                    name: ${AWS_SSO_CONFIGMAP}
+            """
+        }
+      }
+
       steps {
+        // Checkout source code
         checkout scm
       }
     }
     
     stage('Setup Python') {
-      steps {
-        container('cml-dvc') {
-          tool 'Python 3.x'
+      agent {
+        kubernetes {
+          label 'default-jnlp'
+          defaultContainer 'cml-dvc'
+          namespace 'cloudbees-sda'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                my-kubernetes-label: true
+            spec:
+              containers:
+                - name: cml-dvc
+                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
+                  command: ['sh', '-c', 'sleep infinity']
+                  tty: true
+                  volumeMounts:
+                    - name: ikurtz-aws-sso-config
+                      mountPath: /root/.aws/config
+                      readOnly: true
+              volumes:
+                - name: ikurtz-aws-sso-config
+                  configMap:
+                    name: ${AWS_SSO_CONFIGMAP}
+            """
         }
+      }
+
+      steps {
+        // Setup Python environment
+        sh 'python -m venv venv'
+        sh 'source venv/bin/activate'
       }
     }
     
     stage('Setup CML') {
-      steps {
-        container('cml-dvc') {
-          sh 'cml-runner.py setup'
+      agent {
+        kubernetes {
+          label 'default-jnlp'
+          defaultContainer 'cml-dvc'
+          namespace 'cloudbees-sda'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                my-kubernetes-label: true
+            spec:
+              containers:
+                - name: cml-dvc
+                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
+                  command: ['sh', '-c', 'sleep infinity']
+                  tty: true
+                  volumeMounts:
+                    - name: ikurtz-aws-sso-config
+                      mountPath: /root/.aws/config
+                      readOnly: true
+              volumes:
+                - name: ikurtz-aws-sso-config
+                  configMap:
+                    name: ${AWS_SSO_CONFIGMAP}
+            """
         }
+      }
+
+      steps {
+        // Setup CML
+        sh 'cml-runner.py setup'
       }
     }
     
     stage('Setup DVC') {
+      agent {
+        kubernetes {
+          label 'default-jnlp'
+          defaultContainer 'cml-dvc'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                my-kubernetes-label: true
+            spec:
+              containers:
+                - name: cml-dvc
+                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
+                  command: ['sh', '-c', 'sleep infinity']
+                  tty: true
+                  volumeMounts:
+                    - name: ikurtz-aws-sso-config
+                      mountPath: /root/.aws/config
+                      subPath: config
+                      readOnly: true
+              volumes:
+                - name: ikurtz-aws-sso-config
+                  configMap:
+                    name: ${AWS_SSO_CONFIGMAP}
+            """
+        }
+      }
       steps {
-        container('cml-dvc') {
           sh 'dvc init --no-scm'
           sh 'dvc remote add -d storage s3://ikurtz-cbci-aws-workshop-dml-demo/'
           sh 'dvc remote modify storage sso_profile cloudbees-sa-infra-admin'
         }
       }
-    }
     
     stage('Train model') {
+      agent {
+        kubernetes {
+          label 'default-jnlp'
+          defaultContainer 'cml-dvc'
+          yaml """
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              labels:
+                my-kubernetes-label: true
+            spec:
+              containers:
+                - name: cml-dvc
+                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
+                  command: ['sh', '-c', 'sleep infinity']
+                  tty: true
+                  volumeMounts:
+                    - name: ikurtz-aws-sso-config
+                      mountPath: /root/.aws/config
+                      subPath: config
+                      readOnly: true
+              volumes:
+                - name: ikurtz-aws-sso-config
+                  configMap:
+                    name: ${AWS_SSO_CONFIGMAP}
+            """
+        }
+      }
+      
       steps {
-        container('cml-dvc') {
           withAWS(region: 'us-east-1', ssoProfile: 'cloudbees-sa-infra-admin') {
             sh '''
               pip install -r requirements.txt  # Install dependencies
@@ -77,7 +193,6 @@ pipeline {
           }
         }
       }
-    }
     
     stage('Create CML report') {
       environment {
