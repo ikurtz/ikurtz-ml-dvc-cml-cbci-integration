@@ -28,6 +28,10 @@ pipeline {
     }
   }
   
+options {
+    timeout(time: 25, unit: 'MINUTES')
+  }
+
   stages {
     stage('Checkout') {
       steps {
