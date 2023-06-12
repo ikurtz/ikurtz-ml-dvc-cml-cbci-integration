@@ -31,7 +31,7 @@ pipeline {
       
       steps {
         // Setup Python environment
-        sh 'sudo apt-get update && sudo apt-get install -y python3-venv'
+        sh 'apt-get update && apt-get install -y python3-venv'
         sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
         sh 'python3 get-pip.py --user'
         sh '''
