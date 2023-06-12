@@ -91,6 +91,7 @@ pipeline {
           '''
       }
     }
+  }
     
     stage('Setup CML') {
       agent {
