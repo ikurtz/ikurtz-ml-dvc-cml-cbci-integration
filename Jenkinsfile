@@ -14,28 +14,7 @@ pipeline {
         kubernetes {
           label 'default-jnlp'
           defaultContainer 'jnlp'
-          namespace 'cloudbees-sda'
-          yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                my-kubernetes-label: true
-            spec:
-              containers:
-                - name: cml-dvc
-                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-                  command: ['sh', '-c', 'sleep infinity']
-                  tty: true
-                  volumeMounts:
-                    - name: ikurtz-aws-sso-config
-                      mountPath: /root/.aws/config
-                      readOnly: true
-              volumes:
-                - name: ikurtz-aws-sso-config
-                  configMap:
-                    name: ${AWS_SSO_CONFIGMAP}
-            """
+          yamlFile 'jenkins-agent.yaml'
         }
       }
 
@@ -50,77 +29,30 @@ pipeline {
         kubernetes {
           label 'default-jnlp'
           defaultContainer 'cml-dvc'
-          namespace 'cloudbees-sda'
-          yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                my-kubernetes-label: true
-            spec:
-              containers:
-                - name: cml-dvc
-                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-                  command: ['sh', '-c', 'sleep infinity']
-                  tty: true
-                  volumeMounts:
-                    - name: ikurtz-aws-sso-config
-                      mountPath: /root/.aws/config
-                      readOnly: true
-                  securityContext:
-                    runAsUser: 0
-                    allowPrivilegeEscalation: true
-              volumes:
-                - name: ikurtz-aws-sso-config
-                  configMap:
-                    name: ${AWS_SSO_CONFIGMAP}
-            """
+          yamlFile 'jenkins-agent.yaml'
         }
       }
       
       steps {
         // Setup Python environment
-        container('cml-dvc') {
-          sh 'apt-get update && apt-get install -y python3-venv'
-          sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-          sh 'python3 get-pip.py --user'
-          sh '''
-            export PATH="$HOME/.local/bin:$PATH"
-            export PYTHONUSERBASE="$HOME/.local"
-            python3 -m venv venv
-            source venv/bin/activate
-          '''
+        sh 'apt-get update && apt-get install -y python3-venv'
+        sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
+        sh 'python3 get-pip.py --user'
+        sh '''
+          export PATH="$HOME/.local/bin:$PATH"
+          export PYTHONUSERBASE="$HOME/.local"
+          python3 -m venv venv
+          source venv/bin/activate
+        '''
       }
     }
-  }
     
     stage('Setup CML') {
       agent {
         kubernetes {
           label 'default-jnlp'
           defaultContainer 'cml-dvc'
-          namespace 'cloudbees-sda'
-          yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                my-kubernetes-label: true
-            spec:
-              containers:
-                - name: cml-dvc
-                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-                  command: ['sh', '-c', 'sleep infinity']
-                  tty: true
-                  volumeMounts:
-                    - name: ikurtz-aws-sso-config
-                      mountPath: /root/.aws/config
-                      readOnly: true
-              volumes:
-                - name: ikurtz-aws-sso-config
-                  configMap:
-                    name: ${AWS_SSO_CONFIGMAP}
-            """
+          yamlFile 'jenkins-agent.yaml'
         }
       }
 
@@ -135,30 +67,10 @@ pipeline {
         kubernetes {
           label 'default-jnlp'
           defaultContainer 'cml-dvc'
-          yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                my-kubernetes-label: true
-            spec:
-              containers:
-                - name: cml-dvc
-                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-                  command: ['sh', '-c', 'sleep infinity']
-                  tty: true
-                  volumeMounts:
-                    - name: ikurtz-aws-sso-config
-                      mountPath: /root/.aws/config
-                      subPath: config
-                      readOnly: true
-              volumes:
-                - name: ikurtz-aws-sso-config
-                  configMap:
-                    name: ${AWS_SSO_CONFIGMAP}
-            """
+          yamlFile 'jenkins-agent.yaml'
         }
       }
+
       steps {
         sh 'dvc init --no-scm'
         sh 'dvc remote add -d storage s3://ikurtz-cbci-aws-workshop-dml-demo/'
@@ -171,28 +83,7 @@ pipeline {
         kubernetes {
           label 'default-jnlp'
           defaultContainer 'cml-dvc'
-          yaml """
-            apiVersion: v1
-            kind: Pod
-            metadata:
-              labels:
-                my-kubernetes-label: true
-            spec:
-              containers:
-                - name: cml-dvc
-                  image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:0-dvc2-base1
-                  command: ['sh', '-c', 'sleep infinity']
-                  tty: true
-                  volumeMounts:
-                    - name: ikurtz-aws-sso-config
-                      mountPath: /root/.aws/config
-                      subPath: config
-                      readOnly: true
-              volumes:
-                - name: ikurtz-aws-sso-config
-                  configMap:
-                    name: ${AWS_SSO_CONFIGMAP}
-            """
+          yamlFile 'jenkins-agent.yaml'
         }
       }
       
