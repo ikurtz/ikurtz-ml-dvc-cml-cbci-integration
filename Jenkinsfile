@@ -31,16 +31,17 @@ pipeline {
       
       steps {
         // Setup Python environment
-        sh 'sudo mkdir -p /var/lib/apt/lists/partial && chmod 755 /var/lib/apt/lists/partial'
-        sh 'sudo apt-get update && sudo apt-get install -y python3-venv'
-        sh 'curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py'
-        sh 'python3 get-pip.py --user'
-        sh '''
-          export PATH="$HOME/.local/bin:$PATH"
-          export PYTHONUSERBASE="$HOME/.local"
-          python3 -m venv venv
-          source venv/bin/activate
-        '''
+        sh 'curl https://pyenv.run | bash' // Install pyenv
+        sh 'echo \'export PATH="$HOME/.pyenv/bin:$PATH"\' >> ~/.bashrc'
+        sh 'echo \'eval "$(pyenv init --path)"\' >> ~/.bashrc'
+        sh 'echo \'eval "$(pyenv virtualenv-init -)"\' >> ~/.bashrc'
+        sh 'source ~/.bashrc'
+        sh 'pyenv install 3.9.5' // Install Python version
+        sh 'pyenv global 3.9.5' // Set the installed Python version as the default
+        sh 'python -m venv venv' // Create a virtual environment
+        sh 'source venv/bin/activate' // Activate the virtual environment
+        sh 'python -m pip install --upgrade pip' // Upgrade pip
+        sh 'python -m pip install -r requirements.txt' // Install dependencies
       }
     }
     
