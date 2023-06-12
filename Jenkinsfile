@@ -31,13 +31,11 @@ pipeline {
       
       steps {
         // Setup Python environment
-        container('cml-dvc') {
-        user 1000:1000
+        runAsUser 1000
         sh 'python -m venv venv'
         sh 'source venv/bin/activate'
       }
     }
-   }
     
     stage('Setup CML') {
       agent {
