@@ -36,8 +36,8 @@ pipeline {
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
         sh 'python -m pip install --upgrade pip' // Upgrade pip
-        sh 'mkdir -p .cache/pip' // Create a writable cache directory
-        sh 'python -m pip install --cache-dir=.cache/pip -r requirements.txt' // Install dependencies with cache directory
+        sh 'mkdir -p workspace/.cache/pip' // Create a writable cache directory within workspace
+        sh 'python -m pip install --cache-dir=workspace/.cache/pip -r requirements.txt' // Install dependencies with cache directory
       }
     }
     
