@@ -31,8 +31,10 @@ pipeline {
       
       steps {
         // Setup Python environment
-        sh 'python -m venv venv'
+        sh 'apt-get update && apt-get install -y python3 python3-venv'
+        sh 'python3 -m venv venv'
         sh 'source venv/bin/activate'
+        sh 'python3 -m pip install --upgrade pip setuptools'
       }
     }
     
