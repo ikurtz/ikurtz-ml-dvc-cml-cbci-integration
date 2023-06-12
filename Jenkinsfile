@@ -26,18 +26,20 @@ pipeline {
           label 'cml-dvc'
           defaultContainer 'cml-dvc-pythonvenv'
           yamlFile 'jenkins-agent.yaml'
-          customWorkspace '/home/jenkins/agent/workspace'
         }
       }
       
       steps {
         // Setup Python environment
         sh 'mkdir -p venv' // Create a directory for the virtual environment
-        sh 'python3 -m venv venv' // Create the virtual environment in the 'venv' directory
+        sh 'python3 -m venv --clear venv' // Create the virtual environment in the 'venv' directory
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
         sh 'python -m pip install --upgrade pip' // Upgrade pip
-        sh 'python -m pip install -r requirements.txt' // Install dependencies
+        // Set the pip cache directory to a writable location
+        sh 'pip config set global.cache-dir /tmp/pip-cache'
+        // Install dependencies with the --user flag
+        sh 'pip install --user -r requirements.txt'
       }
     }
     
