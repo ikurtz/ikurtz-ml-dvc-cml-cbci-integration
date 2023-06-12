@@ -68,6 +68,7 @@ pipeline {
                       mountPath: /root/.aws/config
                       readOnly: true
                   securityContext:
+                    runAsUser: 0
                     allowPrivilegeEscalation: true
               volumes:
                 - name: ikurtz-aws-sso-config
