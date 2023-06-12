@@ -32,14 +32,11 @@ pipeline {
       steps {
         // Setup Python environment
         sh 'mkdir -p venv' // Create a directory for the virtual environment
-        sh 'python3 -m venv --clear venv' // Create the virtual environment in the 'venv' directory
+        sh 'python3 -m venv venv' // Create the virtual environment in the 'venv' directory
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
         sh 'python -m pip install --upgrade pip' // Upgrade pip
-        // Set the pip cache directory to a writable location
-        sh 'pip config set global.cache-dir /tmp/pip-cache'
-        // Install dependencies
-        sh 'pip install -r requirements.txt'
+        sh 'python -m pip install -r requirements.txt' // Install dependencies
       }
     }
     
