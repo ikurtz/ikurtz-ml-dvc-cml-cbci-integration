@@ -31,17 +31,8 @@ pipeline {
       
       steps {
         // Setup Python environment
-        sh 'curl https://pyenv.run | bash' // Install pyenv
-        sh 'export PYENV_ROOT=/workspace/.pyenv'
-        sh 'export PATH="$PYENV_ROOT/bin:$PATH"'
-        sh 'eval "$(pyenv init --path)"'
-        sh 'eval "$(pyenv virtualenv-init -)"'
-        sh 'pyenv install 3.9.5' // Install Python version
-        sh 'pyenv global 3.9.5' // Set the installed Python version as the default
-        sh 'export VIRTUAL_ENV=/workspace/venv'
-        sh 'export PATH="$VIRTUAL_ENV/bin:$PATH"'
-        sh 'python -m venv $VIRTUAL_ENV' // Create a virtual environment
-        sh 'source $VIRTUAL_ENV/bin/activate' // Activate the virtual environment
+        sh 'python3 -m venv /home/jenkins/venv' // Create a virtual environment in the user's home directory
+        sh 'source /home/jenkins/venv/bin/activate' // Activate the virtual environment
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         sh 'python -m pip install -r requirements.txt' // Install dependencies
       }
