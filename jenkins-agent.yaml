@@ -16,4 +16,4 @@ spec:
   volumes:
     - name: ikurtz-aws-sso-config
       configMap:
-        name: ${AWS_SSO_CONFIGMAP}
+        name: ikurtz-aws-sso-config-map
