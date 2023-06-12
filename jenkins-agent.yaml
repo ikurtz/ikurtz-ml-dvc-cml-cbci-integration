@@ -16,24 +16,16 @@ spec:
       securityContext:
         privileged: true  # Add the privileged option
     - name: cml-dvc-pythonvenv
-      image: python:3
+      image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:cml-dvc-pythonvenv
       command: ['sh', '-c', 'sleep infinity']
       tty: true
       volumeMounts:
-        - name: source
-          mountPath: /workspace/source
-        - name: venv
-          mountPath: /workspace/venv
         - name: ikurtz-aws-sso-config
           mountPath: /root/.aws/config
           readOnly: true
       securityContext:
         privileged: true  # Add the privileged option
   volumes:
-    - name: source
-      emptyDir: {}
-    - name: venv
-      emptyDir: {}
     - name: ikurtz-aws-sso-config
       configMap:
         name: ikurtz-aws-sso-config-map
