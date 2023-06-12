@@ -26,6 +26,9 @@ pipeline {
           label 'cml-dvc'
           defaultContainer 'cml-dvc-pythonvenv'
           yamlFile 'jenkins-agent.yaml'
+          customWorkspace '/home/jenkins/agent/workspace'
+          activeDeadlineSeconds 30 * 60 // 30 minutes
+          podRetention 'Never'
         }
       }
       
