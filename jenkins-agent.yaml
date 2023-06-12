@@ -6,7 +6,7 @@ metadata:
 spec:
   containers:
     - name: cml-dvc
-      image: ghcr.io/iterative/cml:0-dvc2-base1
+      image: docker://dvcorg/cml:0-dvc2-base1-gpu
       command: ['sh', '-c', 'sleep infinity']
       tty: true
       volumeMounts:
