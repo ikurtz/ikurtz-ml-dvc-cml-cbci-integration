@@ -31,8 +31,8 @@ pipeline {
       
       steps {
         // Setup Python environment
-        sh 'python3 -m venv /home/jenkins/venv' // Create a virtual environment in the user's home directory
-        sh 'source /home/jenkins/venv/bin/activate' // Activate the virtual environment
+        sh 'python3 -m venv ~/.venv' // Create a virtual environment in ~/.venv
+        sh 'source ~/.venv/bin/activate' // Activate the virtual environment
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         sh 'python -m pip install -r requirements.txt' // Install dependencies
       }
