@@ -3,10 +3,6 @@ pipeline {
   options {
     timeout(time: 25, unit: 'MINUTES')
   }
-  
-  environment {
-    AWS_SSO_CONFIGMAP = 'ikurtz-aws-sso-config-map'
-  }
 
   stages {
     stage('Checkout') {
