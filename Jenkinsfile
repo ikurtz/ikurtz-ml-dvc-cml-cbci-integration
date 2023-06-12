@@ -23,7 +23,7 @@ pipeline {
     stage('Setup Python') {
       agent {
         kubernetes {
-          label 'default-jnlp'
+          label 'cml-dvc'
           defaultContainer 'cml-dvc'
           yamlFile 'jenkins-agent.yaml'
         }
