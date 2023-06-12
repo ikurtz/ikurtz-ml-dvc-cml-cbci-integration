@@ -20,24 +20,40 @@ pipeline {
       }
     }
     
-    stage('Setup Python') {
-      agent {
-        kubernetes {
-          label 'cml-dvc'
-          defaultContainer 'cml-dvc'
-          yamlFile 'jenkins-agent.yaml'
+    stages {
+        stage('Setup Python') {
+          agent {
+            kubernetes {
+              label 'cml-dvc'
+              defaultContainer 'cml-dvc-pythonvenv'
+              yamlFile 'jenkins-agent.yaml'
+            }
+          }
+          steps {
+                    sh '''
+                        python -m venv /workspace/venv
+                        source /workspace/venv/bin/activate
+                        pip install --upgrade pip
+                        pip install dvc
+                        pip install cml
+                        pip install -r /workspace/source/requirements.txt
+                    '''
+              }
         }
-      }
-      
-      steps {
-        // Setup Python environment
-        sh 'mkdir -p venv' // Create a directory for the virtual environment
-        sh 'python3 -m venv venv' // Create the virtual environment in the 'venv' directory
-        sh 'source venv/bin/activate' // Activate the virtual environment
-        sh 'python -m pip install --upgrade pip' // Upgrade pip
-        sh 'python -m pip install -r requirements.txt' // Install dependencies
-      }
+        stage('Execute Pipeline') {
+            agent {
+            kubernetes {
+              label 'cml-dvc'
+              defaultContainer 'cml-dvc-pythonvenv'
+              yamlFile 'jenkins-agent.yaml'
+            }
+          }
+            steps {
+                    sh 'source /workspace/venv/bin/activate && python /workspace/source/pipeline.py'
+            }
+        }
     }
+}
     
     stage('Setup CML') {
       agent {
@@ -122,7 +138,6 @@ pipeline {
       }
     }
   }
-}
 
 
 
