@@ -33,7 +33,8 @@ pipeline {
         // Setup Python environment
         sh 'mkdir -p venv' // Create a directory for the virtual environment
         sh 'python3 -m venv venv' // Create the virtual environment in the 'venv' directory
-        sh 'source venv/bin/activate' // Activate the virtual environment
+        sh 'chmod +x venv/bin/activate' // Make the activate script executable
+        sh '. venv/bin/activate' // Execute the activate script
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         sh 'python -m pip install -r requirements.txt' // Install dependencies
       }
