@@ -24,7 +24,7 @@ pipeline {
       agent {
         kubernetes {
           label 'cml-dvc'
-          defaultContainer 'cml-dvc'
+          defaultContainer 'cml-dvc-pythonvenv'
           yamlFile 'jenkins-agent.yaml'
         }
       }
