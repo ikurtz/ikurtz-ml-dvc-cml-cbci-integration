@@ -31,7 +31,6 @@ pipeline {
       
       steps {
         // Setup Python environment
-        runAsUser 1000
         sh 'python -m venv venv'
         sh 'source venv/bin/activate'
       }
