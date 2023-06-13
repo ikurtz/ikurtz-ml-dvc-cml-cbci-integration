@@ -16,7 +16,7 @@ spec:
       securityContext:
         privileged: true  # Add the privileged option
     - name: cml-dvc-pythonvenv
-      image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:cml-dvc-pythonvenv
+      image: 268150017804.dkr.ecr.us-east-1.amazonaws.com/cbci-aws-workshop-registry/cml:cml-dvc-custom
       command: ['sh', '-c', 'sleep infinity']
       tty: true
       volumeMounts:
