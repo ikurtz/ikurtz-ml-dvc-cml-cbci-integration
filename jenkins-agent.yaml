@@ -26,6 +26,7 @@ spec:
         - name: pip-volume
           mountPath: /home/jenkins/.pip
       securityContext:
+        runAsUser: 1000
         privileged: true  # Add the privileged option
   volumes:
     - name: ikurtz-aws-sso-config
