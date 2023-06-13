@@ -29,6 +29,10 @@ pipeline {
         }
       }
       
+      environment {
+        PIP_CONFIG_FILE = '/tmp/pip.conf'
+    }
+
       steps {
         // Setup Python environment
         sh 'mkdir -p venv' // Create a directory for the virtual environment
@@ -38,10 +42,12 @@ pipeline {
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Set the pip cache directory to a writable location
         sh 'pip config set global.cache-dir /tmp/pip-cache'
+        // Set the pip configuration file to a writable location
+        sh 'pip config set global.config /tmp/pip.conf'
         // Install dependencies with the --user flag
         sh 'pip install --user -r requirements.txt'
-      }
     }
+}
     
     stage('Setup CML') {
       agent {
