@@ -64,7 +64,7 @@ pipeline {
     stage('Setup CML') {
       agent {
         kubernetes {
-          label 'default-jnlp'
+          label 'cml-dvc'
           defaultContainer 'cml-dvc'
           yamlFile 'jenkins-agent.yaml'
         }
@@ -79,7 +79,7 @@ pipeline {
     stage('Setup DVC') {
       agent {
         kubernetes {
-          label 'default-jnlp'
+          label 'cml-dvc'
           defaultContainer 'cml-dvc'
           yamlFile 'jenkins-agent.yaml'
         }
@@ -95,7 +95,7 @@ pipeline {
     stage('Train model') {
       agent {
         kubernetes {
-          label 'default-jnlp'
+          label 'cml-dvc'
           defaultContainer 'cml-dvc'
           yamlFile 'jenkins-agent.yaml'
         }
