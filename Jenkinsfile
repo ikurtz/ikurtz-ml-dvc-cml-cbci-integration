@@ -46,10 +46,10 @@ pipeline {
           def agentPodName = fetchAgentPodName()
         
         // Create the .pip directory if it doesn't exist
-        // sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- mkdir -p /home/jenkins/.pip"
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- mkdir -p /home/jenkins/.pip"
         // Set ownership and permissions for cache directory
-        // sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chown -R 1000:1000 /home/jenkins/.pip"
-        // sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chmod -R 755 /home/jenkins/.pip/cache"
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chown -R 1000:1000 /home/jenkins/.pip"
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chmod -R 755 /home/jenkins/.pip/cache"
         
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
