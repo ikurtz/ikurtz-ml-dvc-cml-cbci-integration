@@ -1,7 +1,7 @@
 def fetchAgentPodName() {
   return sh(
     returnStdout: true,
-    script: 'kubectl get pods -n cloudbees-sda --field-selector=status.phase=Running --selector=jenkins -o jsonpath="{.items[0].metadata.name}"'
+    script: 'kubectl get pods -n cloudbees-sda --field-selector=status.phase=Running --selector=jenkins-agent -o jsonpath="{.items[0].metadata.name}"'
   ).trim()
 }
 
