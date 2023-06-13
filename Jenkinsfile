@@ -29,6 +29,10 @@ pipeline {
         }
       }
 
+      environment {
+        XDG_CACHE_HOME = "${env.HOME}/.pip/cache"
+      }
+  
       steps {
         // Setup Python environment
         sh 'mkdir -p venv' // Create a directory for the virtual environment
@@ -38,8 +42,8 @@ pipeline {
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
         sh 'python -m pip install --user -r requirements.txt'
+      }
     }
-}
     
     stage('Setup CML') {
       agent {
