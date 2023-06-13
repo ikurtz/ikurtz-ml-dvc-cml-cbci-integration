@@ -28,10 +28,6 @@ pipeline {
           yamlFile 'jenkins-agent.yaml'
         }
       }
-      
-      environment {
-        PIP_CONFIG_FILE = '/tmp/pip.conf'
-    }
 
       steps {
         // Setup Python environment
@@ -40,12 +36,8 @@ pipeline {
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
         sh 'python -m pip install --upgrade pip' // Upgrade pip
-        // Set the pip cache directory to a writable location
-        sh 'pip config set global.cache-dir /tmp/pip-cache'
-        // Set the pip configuration file to a writable location
-        sh 'pip config set global.config /tmp/pip.conf'
         // Install dependencies with the --user flag
-        sh 'pip install --user -r requirements.txt'
+        sh 'python -m pip install --user -r requirements.txt'
     }
 }
     
