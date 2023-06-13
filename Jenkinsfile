@@ -1,3 +1,10 @@
+def fetchAgentPodName() {
+  return sh(
+    returnStdout: true,
+    script: 'kubectl get pods -n cloudbees-sda --field-selector=status.phase=Running --selector=jenkins=cml-dvc-pythonvenv -o jsonpath="{.items[0].metadata.name}"'
+  ).trim()
+}
+
 pipeline {
   agent none
   options {
@@ -39,20 +46,19 @@ pipeline {
         sh 'python3 -m venv --clear venv' // Create the virtual environment in the 'venv' directory
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
-        
-        // Get Jenkins agent pod name
-        def jenkinsAgentPod = sh(returnStdout: true, script: "kubectl get pods -n cloudbees-sda --field-selector=status.phase=Running --selector=jenkins=cml-dvc-pythonvenv -o jsonpath='{.items[0].metadata.name}'").trim()
+        script {
+          def agentPodName = fetchAgentPodName()
         
         // Set ownership and permissions for cache directory
-        sh "kubectl exec -ti -n cloudbees-sda $jenkinsAgentPod -- chown -R 1000:1000 /home/jenkins/.pip"
-        sh "kubectl exec -ti -n cloudbees-sda $jenkinsAgentPod -- chmod -R 755 /home/jenkins/.pip/cache"
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chown -R 1000:1000 /home/jenkins/.pip"
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chmod -R 755 /home/jenkins/.pip/cache"
         
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
         sh 'python -m pip install --user -r requirements.txt'
       }
+     }
     }
-    
     stage('Setup CML') {
       agent {
         kubernetes {
