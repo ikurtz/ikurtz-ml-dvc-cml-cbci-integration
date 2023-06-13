@@ -38,6 +38,7 @@ pipeline {
 
       environment {
         PIP_CACHE_DIR = "${workspace}/pip-cache"
+        PIP_CONFIG_FILE = "${workspace}/pip.conf"
       }
   
       steps {
@@ -57,7 +58,7 @@ pipeline {
         
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
-        sh 'pip install --cache-dir="${PIP_CACHE_DIR}" -r requirements.txt' // Install packages
+        sh 'pip install --cache-dir="${PIP_CACHE_DIR}" --config="${PIP_CONFIG_FILE}" -r requirements.txt' // Install packages
       }
      }
     }
