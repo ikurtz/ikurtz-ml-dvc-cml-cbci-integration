@@ -39,6 +39,11 @@ pipeline {
         sh 'python3 -m venv --clear venv' // Create the virtual environment in the 'venv' directory
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
+        
+        // Set ownership and permissions for cache directory
+        sh 'sudo chown -R jenkins:jenkins /home/jenkins/.pip'
+        sh 'sudo chmod -R 755 /home/jenkins/.pip/cache'
+        
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
         sh 'python -m pip install --user -r requirements.txt'
