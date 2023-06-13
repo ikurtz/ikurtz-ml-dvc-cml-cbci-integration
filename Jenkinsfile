@@ -40,9 +40,12 @@ pipeline {
         sh 'chmod +x venv/bin/activate' // Make the activate script executable
         sh '. venv/bin/activate' // Execute the activate script
         
+        // Get Jenkins agent pod name
+        def jenkinsAgentPod = sh(returnStdout: true, script: "kubectl get pods -n cloudbees-sda --field-selector=status.phase=Running --selector=jenkins=cml-dvc-pythonvenv -o jsonpath='{.items[0].metadata.name}'").trim()
+        
         // Set ownership and permissions for cache directory
-        sh 'sudo chown -R jenkins:jenkins /home/jenkins/.pip'
-        sh 'sudo chmod -R 755 /home/jenkins/.pip/cache'
+        sh "kubectl exec -ti -n cloudbees-sda $jenkinsAgentPod -- chown -R 1000:1000 /home/jenkins/.pip"
+        sh "kubectl exec -ti -n cloudbees-sda $jenkinsAgentPod -- chmod -R 755 /home/jenkins/.pip/cache"
         
         sh 'python -m pip install --upgrade pip' // Upgrade pip
         // Install dependencies with the --user flag
