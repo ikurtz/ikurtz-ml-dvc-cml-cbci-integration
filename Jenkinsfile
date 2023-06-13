@@ -31,7 +31,7 @@ pipeline {
       agent {
         kubernetes {
           label 'cml-dvc'
-          defaultContainer 'cml-dvc-pythonvenv'
+          defaultContainer 'cml-dvc-custom'
           yamlFile 'jenkins-agent.yaml'
         }
       }
@@ -49,6 +49,8 @@ pipeline {
         script {
           def agentPodName = fetchAgentPodName()
         
+        // Create the .pip directory if it doesn't exist
+        sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- mkdir -p /home/jenkins/.pip"
         // Set ownership and permissions for cache directory
         sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chown -R 1000:1000 /home/jenkins/.pip"
         sh "kubectl exec -ti -n cloudbees-sda ${agentPodName} -- chmod -R 755 /home/jenkins/.pip/cache"
